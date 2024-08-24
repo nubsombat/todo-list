@@ -17,7 +17,7 @@ export default function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: T
     return (
         <Card key={todo.id} className="mb-4 break-inside-avoid">
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between ">
                     <span className={todo.completed ? "line-through" : ""}>
                         {todo.title}
                     </span>
@@ -29,7 +29,7 @@ export default function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: T
                 <p className="text-sm">Created on {format(createdAt, "PP")}</p>
             </CardHeader>
             <CardContent>
-                <p>{todo.description}</p>
+                <p >{todo.description}</p>
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button variant="outline" size="sm" onClick={() => onEdit(todo)}>

@@ -1,11 +1,13 @@
-import { z } from "zod";
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Todo } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
 import { todoFormSchema } from "@/schemas/todoSchema";
+import { Todo } from "@/types";
+import * as z from "zod";
 
 interface TodoDialogProps {
   isOpen: boolean;
@@ -15,32 +17,27 @@ interface TodoDialogProps {
 }
 
 export default function TodoDialog({ isOpen, onClose, onSave, todo }: TodoDialogProps) {
-  const [title, setTitle] = useState(todo?.title || "");
-  const [description, setDescription] = useState(todo?.description || "");
-  const [errors, setErrors] = useState<{ title?: string }>({});
+  const defaultValues = {
+    title: todo?.title || "",
+    description: todo?.description || "",
+  };
+
+  const { control, handleSubmit, reset, formState: { errors } } = useForm<z.infer<typeof todoFormSchema>>({
+    resolver: zodResolver(todoFormSchema),
+    defaultValues,
+  });
 
   useEffect(() => {
     if (todo) {
-      setTitle(todo.title);
-      setDescription(todo.description);
+      reset(todo);
     } else {
-      setTitle("");
-      setDescription("");
+      reset(defaultValues);
     }
-  }, [todo]);
+  }, [todo, reset]);
 
-  const handleSubmit = () => {
-    const validationResult = todoFormSchema.safeParse({ title, description });
-
-    if (!validationResult.success) {
-      const validationErrors = validationResult.error.flatten().fieldErrors;
-      setErrors({
-        title: validationErrors.title?.[0],
-      });
-      return;
-    }
-
-    onSave({ title, description });
+  const onSubmit = (data: z.infer<typeof todoFormSchema>) => {
+    onSave(data);
+    reset(defaultValues);
     onClose();
   };
 
@@ -50,28 +47,39 @@ export default function TodoDialog({ isOpen, onClose, onSave, todo }: TodoDialog
         <DialogHeader>
           <DialogTitle>{todo ? "Edit Todo" : "Add New Todo"}</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
-              className="col-span-4"
-            />
-            {errors.title && <p className="text-red-500 col-span-3">{errors.title}</p>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Controller
+                name="title"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Title"
+                    className="col-span-4"
+                  />
+                )}
+              />
+              {errors.title && <p className="text-red-500 col-span-3">{errors.title.message}</p>}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    placeholder="Description"
+                    className="col-span-4"
+                  />
+                )}
+              />
+              {errors.description && <p className="text-red-500 col-span-3">{errors.description.message}</p>}
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description"
-              className="col-span-4"
-            />
-          </div>
-        </div>
-        <Button onClick={handleSubmit}>{todo ? "Update Todo" : "Save Todo"}</Button>
+          <Button type="submit">{todo ? "Update Todo" : "Save Todo"}</Button>
+        </form>
       </DialogContent>
     </Dialog>
   );
