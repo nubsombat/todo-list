@@ -48,19 +48,36 @@ npm run dev
 2. Open your browser and visit `http://localhost:3000`
 
 ## Project Structure
+
+```plaintext
 todo-list/
-├── app/                 # Next.js app directory
-│   ├── layout.tsx       # Root layout component
-│   └── page.tsx         # Home page component
-├── components/          # Reusable React components
-│   ├── auth/            # Authentication-related components
-│   ├── todo/            # Todo-related components
-│   └── ui/              # UI components (buttons, cards, etc.)
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility functions and libraries
-├── public/              # Static assets
-├── schemas/             # Zod schemas for form validation
-├── services/            # API service functions
-├── styles/              # Global styles
-├── types/               # TypeScript type definitions
-└── utils/               # Utility functions
+├── app/                      # Next.js app directory
+│   ├── layout.tsx            # Root layout component
+│   └── page.tsx              # Home page component
+├── components/               # Reusable React components
+│   ├── auth/                 # Authentication-related components
+│   ├── todo/                 # Todo-related components
+│   └── ui/                   # UI components (buttons, cards, etc.)
+├── hooks/                    # Custom React hooks
+├── lib/                      # Utility functions and libraries
+├── public/                   # Static assets
+├── schemas/                  # Zod schemas for form validation
+├── services/                 # API service functions
+├── styles/                   # Global styles
+├── types/                    # TypeScript type definitions
+└── utils/                    # Utility functions
+
+
+### Explanation:
+
+- **app/**: This directory contains the Next.js application files including layouts and pages.
+- **components/**: Reusable components for the application, such as UI components, authentication components, etc.
+- **hooks/**: Custom React hooks used across the application.
+- **lib/**: Utility functions and libraries used in the project.
+- **public/**: Static assets like images and fonts.
+- **schemas/**: Zod schemas used for form validation.
+- **services/**: Functions for interacting with APIs.
+- **styles/**: Global styles for the application.
+- **types/**: TypeScript definitions for type safety.
+- **utils/**: Additional utility functions.
+
