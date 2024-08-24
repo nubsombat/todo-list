@@ -37,7 +37,7 @@ export default function LandingPage() {
         <p className="text-xl text-gray-600 mb-8">
           Stay organized, boost productivity, and achieve your goals with TodoMaster.
         </p>
-        <Link href="/task">
+        <Link href="/to-do-list">
           <Button size="lg" className="mb-12">
             Get Started <ArrowRight className="" />
           </Button>
