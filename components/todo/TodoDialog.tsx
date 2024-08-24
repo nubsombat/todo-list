@@ -8,15 +8,17 @@ import { useForm, Controller } from "react-hook-form";
 import { todoFormSchema } from "@/schemas/todoSchema";
 import { Todo } from "@/types";
 import * as z from "zod";
+import { Loader2 } from "lucide-react";
 
 interface TodoDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (todo: Partial<Todo>) => void;
   todo?: Todo | null;
+  isLoading: boolean;
 }
 
-export default function TodoDialog({ isOpen, onClose, onSave, todo }: TodoDialogProps) {
+export default function TodoDialog({ isOpen, onClose, onSave, todo, isLoading }: TodoDialogProps) {
   const defaultValues = {
     title: todo?.title || "",
     description: todo?.description || "",
@@ -78,7 +80,9 @@ export default function TodoDialog({ isOpen, onClose, onSave, todo }: TodoDialog
               {errors.description && <p className="text-red-500 col-span-3">{errors.description.message}</p>}
             </div>
           </div>
-          <Button type="submit">{todo ? "Update Todo" : "Save Todo"}</Button>
+          <Button type="submit">
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {todo ? "Update Todo" : "Save Todo"}</Button>
         </form>
       </DialogContent>
     </Dialog>

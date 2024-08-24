@@ -2,23 +2,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Loader2, Trash2 } from "lucide-react";
 import { Todo } from "@/types";
 
 interface TodoItemProps {
     todo: Todo;
+    isLoading: boolean;
     onEdit: (todo: Todo) => void;
     onDelete: (id: string) => void;
     onToggleComplete: (id: string) => void;
 }
 
-export default function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: TodoItemProps) {
+export default function TodoItem({ todo, isLoading, onEdit, onDelete, onToggleComplete }: TodoItemProps) {
     const createdAt = new Date(todo.created_at);
     return (
         <Card key={todo.id} className="mb-4 break-inside-avoid">
             <CardHeader>
-                <CardTitle className="flex items-center justify-between ">
-                    <span className={todo.completed ? "line-through" : ""}>
+                <CardTitle className="flex items-center justify-between">
+                    <span className={`break-all ${todo.completed ? "line-through" : ""}`}>
                         {todo.title}
                     </span>
                     <Checkbox
@@ -26,17 +27,19 @@ export default function TodoItem({ todo, onEdit, onDelete, onToggleComplete }: T
                         onCheckedChange={() => onToggleComplete(todo.id)}
                     />
                 </CardTitle>
-                <p className="text-sm">Created on {format(createdAt, "PP")}</p>
+                <p className="text-sm">Created on {format(createdAt, "PPpp")}</p>
             </CardHeader>
-            <CardContent>
-                <p >{todo.description}</p>
+            <CardContent >
+                <p className="break-all">{todo.description}</p>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Button variant="outline" size="sm" onClick={() => onEdit(todo)}>
-                    <Edit className="mr-2 h-4 w-4" /> Edit
+                <Button variant="outline" size="sm" onClick={() => onEdit(todo)} disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Edit className="mr-2 h-4 w-4" />}
+                    Edit
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => onDelete(todo.id)}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                <Button variant="destructive" size="sm" onClick={() => onDelete(todo.id)} disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                    Delete
                 </Button>
             </CardFooter>
         </Card>

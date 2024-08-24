@@ -3,7 +3,7 @@ import TodoItem from "@/components/todo/TodoItem";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Todo } from "@/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useToast } from "../ui/use-toast";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import TodoDialog from "./TodoDialog";
@@ -20,9 +20,11 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
     const { toast } = useToast()
     const handleError = useErrorHandler();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
     const handleSave = async (todo: Partial<Todo>) => {
+        setIsLoading(true)
         try {
             if (editingTodo) {
                 const isDataChanged = editingTodo.title !== todo.title || editingTodo.description !== todo.description;
@@ -45,12 +47,14 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
         } catch (error) {
             handleError(error);
         }
+        setIsLoading(false)
         setEditingTodo(null);
         setIsDialogOpen(false);
 
     };
 
     const handleDelete = async (id: string) => {
+        setIsLoading(true)
         try {
             await deleteTodo(id);
             toast({
@@ -60,9 +64,11 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
         } catch (error) {
             handleError(error);
         }
+        setIsLoading(false)
     };
 
     const handleToggleComplete = async (id: string) => {
+        setIsLoading(true)
         try {
             const todo = todos.find((t) => t.id === id);
             if (todo) {
@@ -75,8 +81,12 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
         } catch (error) {
             handleError(error);
         }
-    };
+        setIsLoading(false)
 
+    };
+    const sortedTodos = useMemo(() => {
+        return [...todos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }, [todos]);
     return (
         <div>
             <Button onClick={() => setIsDialogOpen(true)} className="mb-4">
@@ -89,12 +99,13 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
                     setIsDialogOpen(false);
                     setEditingTodo(null);
                 }}
+                isLoading={isLoading}
                 onSave={handleSave}
                 todo={editingTodo}
             />
 
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
-                {todos.map((todo) => (
+                {sortedTodos.map((todo) => (
                     <TodoItem
                         key={todo.id}
                         todo={todo}
@@ -102,11 +113,13 @@ export default function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
                             setEditingTodo(todo);
                             setIsDialogOpen(true);
                         }}
+                        isLoading={isLoading}
                         onDelete={handleDelete}
                         onToggleComplete={handleToggleComplete}
                     />
                 ))}
             </div>
+
         </div>
     );
 }
